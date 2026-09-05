@@ -4,98 +4,46 @@
   <meta charset="UTF-8">
   <title>Production Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <h1>Production Dashboard</h1>
+  <header>
+    <h1>Production Dashboard</h1>
+    <a href="add.html" class="btn">Add Data</a>
+  </header>
 
-  <table id="productionTable">
-    <thead>
-      <tr>
-        <th>WORK DATE</th>
-        <th>CO-186</th>
-        <th>CO-252</th>
-        <th>210</th>
-        <th>18626</th>
-        <th>ANTHEM</th>
-        <th>HUMANA</th>
-        <th>UHC</th>
-        <th>ROI</th>
-        <th>TOTAL</th>
-        <th>STATUS</th>
-        <th>PERCENT</th>
-      </tr>
-    </thead>
-    <tbody id="dataRows">
-      <!-- Rows will be added dynamically -->
-    </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="9" style="text-align:right"><strong>Grand Total:</strong></td>
-        <td id="grandTotal"></td>
-        <td id="completionStatus"></td>
-        <td id="averagePercent"></td>
-      </tr>
-    </tfoot>
-  </table>
+  <main>
+    <table id="dashboard">
+      <thead>
+        <tr>
+          <th>WORK DATE</th>
+          <th>CO-186</th>
+          <th>CO-252</th>
+          <th>210</th>
+          <th>18626</th>
+          <th>ANTHEM</th>
+          <th>HUMANA</th>
+          <th>UHC</th>
+          <th>ROI</th>
+          <th>TOTAL</th>
+          <th>STATUS</th>
+          <th>PERCENT</th>
+        </tr>
+      </thead>
+      <tbody id="dataRows"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="9" style="text-align:right;"><strong>WD - 21 DAYS</strong></td>
+          <td id="totalSum"></td>
+          <td></td>
+          <td id="avgPercent"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </main>
 
-  <script>
-    // Sample data (you can replace this with Google Sheets API data)
-    const data = [
-      { date: "01-09-2026", co186: 10, co252: 20, c210: 15, c18626: 5, anthem: 10, humana: 0, uhc: 4, roi: 0 },
-      { date: "02-09-2026", co186: 0, co252: 0, c210: 0, c18626: 0, anthem: 0, humana: 0, uhc: 0, roi: 0 },
-      { date: "03-09-2026", co186: 64, co252: 0, c210: 0, c18626: 0, anthem: 0, humana: 0, uhc: 0, roi: 0 },
-      { date: "04-09-2026", co186: "LOW INVENTORY", co252: 0, c210: 0, c18626: 0, anthem: 0, humana: 0, uhc: 0, roi: 0 }
-    ];
-
-    const tableBody = document.getElementById("dataRows");
-    let totalSum = 0;
-    let percentValues = [];
-    let completeCount = 0;
-
-    data.forEach((row) => {
-      const tr = document.createElement("tr");
-
-      // Calculate TOTAL =IF(SUM(C3:J3)=0,"",SUM(C3:J3))
-      const numericValues = Object.values(row).filter(v => typeof v === "number");
-      const total = numericValues.length ? numericValues.reduce((a,b)=>a+b,0) : 0;
-      totalSum += total;
-
-      // STATUS =IF(K3="","",IF(K3>=64,"✅","❌"))
-      const status = total >= 64 ? "✅" : total === 0 ? "" : "❌";
-      if (status === "✅") completeCount++;
-
-      // PERCENT =IF(K3="","",IF(COUNTIF(C3:J3,"LOW INVENTORY")>0,1,K3/64))
-      const lowInventory = Object.values(row).includes("LOW INVENTORY");
-      const percent = total === 0 ? "" : lowInventory ? 1 : (total / 64);
-      if (percent !== "") percentValues.push(percent);
-
-      tr.innerHTML = `
-        <td>${row.date}</td>
-        <td>${row.co186}</td>
-        <td>${row.co252}</td>
-        <td>${row.c210}</td>
-        <td>${row.c18626}</td>
-        <td>${row.anthem}</td>
-        <td>${row.humana}</td>
-        <td>${row.uhc}</td>
-        <td>${row.roi}</td>
-        <td>${total || ""}</td>
-        <td>${status}</td>
-        <td>${percent !== "" ? (percent * 100).toFixed(0) + "%" : ""}</td>
-      `;
-      tableBody.appendChild(tr);
-    });
-
-    // AVERAGE =IF(COUNT(M3:M23)=0,"",AVERAGE(M3:M23))
-    const averagePercent = percentValues.length ? (percentValues.reduce((a,b)=>a+b,0)/percentValues.length)*100 : "";
-
-    // COMPLETE =IF(COUNTIF(L3:L23,"✅")>=18,"COMPLETE","")
-    const completionStatus = completeCount >= 18 ? "COMPLETE" : "";
-
-    // SUM TOTAL =IF(SUM(K3:K23)=0,"",SUM(K3:K23))
-    document.getElementById("grandTotal").textContent = totalSum || "";
-    document.getElementById("averagePercent").textContent = averagePercent ? averagePercent.toFixed(1) + "%" : "";
-    document.getElementById("completionStatus").textContent = completionStatus;
-  </script>
+  <footer>
+    <p>© 2026 Production Tracker</p>
+  </footer>
 </body>
 </html>

@@ -1,32 +1,8 @@
+// Save data from form
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("dataForm");
-
-  // ✅ Step 1: Replace localStorage Save Logic
-  async function saveToGoogleSheet(entry) {
-    const SHEET_ID = "1n9WnRrAohbm7Uc1skG5DiE-yGHE-h4DpuXkmbg52PzE";   // from your sheet URL
-    const API_KEY = "AIzaSyBgxhckOCJy3xbdEFgbZVtJ20KY9GTtX0w";     // from Google Cloud Console
-    const range = "Sheet1!A2:L2";         // adjust based on your sheet columns
-
-    const values = [[
-      entry.workDate, entry.co186, entry.co252, entry.c210, entry.c18626,
-      entry.anthem, entry.humana, entry.uhc, entry.roi,
-      entry.total, entry.status, entry.percent
-    ]];
-
-    await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/1n9WnRrAohbm7Uc1skG5DiE-yGHE-h4DpuXkmbg52PzE/values/Sheet1!A2:L2:append?valueInputOption=USER_ENTERED&key=AIzaSyBgxhckOCJy3xbdEFgbZVtJ20KY9GTtX0w`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ values })
-      }
-    );
-
-    alert("Data saved to Google Sheets!");
-  }
-
   if (form) {
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
       const entry = {
         workDate: document.getElementById("workDate").value,
@@ -44,41 +20,40 @@ document.addEventListener("DOMContentLoaded", () => {
       entry.status = total >= 64 ? "✅" : "❌";
       entry.percent = total ? ((total/64)*100).toFixed(2) + "%" : "";
 
-      await saveToGoogleSheet(entry);
+      const data = JSON.parse(localStorage.getItem("productionData") || "[]");
+      data.push(entry);
+      localStorage.setItem("productionData", JSON.stringify(data));
+      alert("Data saved successfully!");
       form.reset();
     });
   }
 
-  // ✅ Step 2: Replace Dashboard Load Logic
-  async function loadData() {
-    const SHEET_ID = "1n9WnRrAohbm7Uc1skG5DiE-yGHE-h4DpuXkmbg52PzE";
-    const API_KEY = "AIzaSyBgxhckOCJy3xbdEFgbZVtJ20KY9GTtX0w";
-    const range = "Sheet1!A2:L2";
-
-    const res = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/1n9WnRrAohbm7Uc1skG5DiE-yGHE-h4DpuXkmbg52PzE/values/Sheet1!A2:L2?key=AIzaSyBgxhckOCJy3xbdEFgbZVtJ20KY9GTtX0w`
-    );
-    const data = await res.json();
-    const rows = data.values || [];
-
-    const tableBody = document.getElementById("dataRows");
-    if (!tableBody) return;
-
-    tableBody.innerHTML = "";
+  // Load data in dashboard
+  const tableBody = document.getElementById("dataRows");
+  if (tableBody) {
+    const data = JSON.parse(localStorage.getItem("productionData") || "[]");
     let totalSum = 0, percentSum = 0;
-
-    rows.slice(1).forEach(row => { // skip header row
+    data.forEach((row) => {
       const tr = document.createElement("tr");
-      tr.innerHTML = row.map(val => `<td>${val}</td>`).join("");
+      tr.innerHTML = `
+        <td>${row.workDate}</td>
+        <td>${row.co186}</td>
+        <td>${row.co252}</td>
+        <td>${row.c210}</td>
+        <td>${row.c18626}</td>
+        <td>${row.anthem}</td>
+        <td>${row.humana}</td>
+        <td>${row.uhc}</td>
+        <td>${row.roi}</td>
+        <td>${row.total}</td>
+        <td>${row.status}</td>
+        <td>${row.percent}</td>
+      `;
       tableBody.appendChild(tr);
-
-      totalSum += Number(row[9]) || 0;     // TOTAL column
-      percentSum += parseFloat(row[11]) || 0; // PERCENT column
+      totalSum += row.total;
+      percentSum += parseFloat(row.percent) || 0;
     });
-
     document.getElementById("totalSum").textContent = totalSum;
-    document.getElementById("avgPercent").textContent = (percentSum/rows.length).toFixed(2) + "%";
+    document.getElementById("avgPercent").textContent = (percentSum/data.length).toFixed(2) + "%";
   }
-
-  loadData(); // run when dashboard loads
 });

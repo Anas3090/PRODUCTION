@@ -41,7 +41,58 @@
       </tfoot>
     </table>
   </main>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyALgzflHBREiKYAhy0HEcZR19gd1CJMBEQ",
+    authDomain: "production-sheet-b5c65.firebaseapp.com",
+    databaseURL: "https://production-sheet-b5c65-default-rtdb.firebaseio.com",
+    projectId: "production-sheet-b5c65",
+    storageBucket: "production-sheet-b5c65.appspot.com",
+    messagingSenderId: "1088797956054",
+    appId: "1:1088797956054:web:1f5397850eac7ad40f3677"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  async function loadData() {
+    const dbRef = ref(db);
+    try {
+      const snapshot = await get(child(dbRef, 'productionData'));
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const tableBody = document.getElementById("dataRows");
+        tableBody.innerHTML = "";
+
+        Object.values(data).forEach(row => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${row.workDate}</td>
+            <td>${row.co186}</td>
+            <td>${row.co252}</td>
+            <td>${row.c210}</td>
+            <td>${row.c18626}</td>
+            <td>${row.wrokdate}</td>
+            <td>${row.humana}</td>
+            <td>${row.uhc}</td>
+            <td>${row.roi}</td>
+            <td>${row.total}</td>
+            <td>${row.status}</td>
+            <td>${row.percent}</td>
+          `;
+          tableBody.appendChild(tr);
+        });
+      }
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
+  }
+
+  loadData();
+</script>
+  
   <footer>
     <p>© 2026 Production Tracker</p>
   </footer>

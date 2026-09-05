@@ -26,6 +26,58 @@
       <button type="submit">Save Data</button>
     </form>
   </main>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyALgzflHBREiKYAhy0HEcZR19gd1CJMBEQ",
+    authDomain: "production-sheet-b5c65.firebaseapp.com",
+    databaseURL: "https://production-sheet-b5c65-default-rtdb.firebaseio.com",
+    projectId: "production-sheet-b5c65",
+    storageBucket: "production-sheet-b5c65.appspot.com",
+    messagingSenderId: "1088797956054",
+    appId: "1:1088797956054:web:1f5397850eac7ad40f3677"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Hook form submit → saveData
+  document.getElementById("dataForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    // Collect values from inputs
+    const entry = {
+      workDate: document.getElementById("workDate").value,
+      co186: document.getElementById("co186").value || 0,
+      co252: document.getElementById("co252").value || 0,
+      210: document.getElementById("210").value || 0,
+      18626: document.getElementById("18626").value || 0,
+      anthem: document.getElementById("anthem").value || 0,
+      humana: document.getElementById("humana").value || 0,
+      uhc: document.getElementById("uhc").value || 0,
+      roi: document.getElementById("roi").value || 0,
+      total: document.getElementById("total").value || 0,
+      status: document.getElementById("status").value || 0,
+      percent: document.getElementById("prcent").value || 0,
+      
+      // add other fields here
+      timestamp: new Date().toISOString()
+    };
+
+    // Save to Firebase
+    const id = Date.now();
+    set(ref(db, 'productionData/' + id), entry)
+      .then(() => {
+        alert("Data saved to Firebase!");
+        e.target.reset(); // clear form
+      })
+      .catch((error) => {
+        console.error("Error saving data:", error);
+      });
+  });
+</script>
 
   <footer>
     <p>© 2026 Production Tracker</p>

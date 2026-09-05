@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function saveToGoogleSheet(entry) {
     const SHEET_ID = "1n9WnRrAohbm7Uc1skG5DiE-yGHE-h4DpuXkmbg52PzE";   // from your sheet URL
     const API_KEY = "AIzaSyBgxhckOCJy3xbdEFgbZVtJ20KY9GTtX0w";     // from Google Cloud Console
-    const range = "Sheet1!B2:M2";         // adjust based on your sheet columns
+    const range = "Sheet1!A2:L2";         // adjust based on your sheet columns
 
     const values = [[
       entry.workDate, entry.co186, entry.co252, entry.c210, entry.c18626,
@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ]];
 
     await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/1n9WnRrAohbm7Uc1skG5DiE-yGHE-h4DpuXkmbg52PzE/values/Sheet1!B2:M2:append?valueInputOption=USER_ENTERED&key=AIzaSyBgxhckOCJy3xbdEFgbZVtJ20KY9GTtX0w`,
+      `https://sheets.googleapis.com/v4/spreadsheets/1n9WnRrAohbm7Uc1skG5DiE-yGHE-h4DpuXkmbg52PzE/values/Sheet1!A2:L2:append?valueInputOption=USER_ENTERED&key=AIzaSyBgxhckOCJy3xbdEFgbZVtJ20KY9GTtX0w`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -53,10 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadData() {
     const SHEET_ID = "1n9WnRrAohbm7Uc1skG5DiE-yGHE-h4DpuXkmbg52PzE";
     const API_KEY = "AIzaSyBgxhckOCJy3xbdEFgbZVtJ20KY9GTtX0w";
-    const range = "Sheet1!B2:M2";
+    const range = "Sheet1!A2:L2";
 
     const res = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/1n9WnRrAohbm7Uc1skG5DiE-yGHE-h4DpuXkmbg52PzE/values/Sheet1!B2:M2?key=AIzaSyBgxhckOCJy3xbdEFgbZVtJ20KY9GTtX0w`
+      `https://sheets.googleapis.com/v4/spreadsheets/1n9WnRrAohbm7Uc1skG5DiE-yGHE-h4DpuXkmbg52PzE/values/Sheet1!A2:L2?key=AIzaSyBgxhckOCJy3xbdEFgbZVtJ20KY9GTtX0w`
     );
     const data = await res.json();
     const rows = data.values || [];
